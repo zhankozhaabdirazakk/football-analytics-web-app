@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Champions League Knockout Bracket</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+    
+        body {
+            font-family: Inter, Arial, sans-serif;
+            background:
+                radial-gradient(circle at top, rgba(37, 99, 235, 0.12), transparent 28%),
+                linear-gradient(180deg, #0b1020 0%, #111827 100%);
+            color: #f9fafb;
+            padding: 24px;
+            min-height: 100vh;
+        }
+    
+        .container {
+            max-width: 1850px;
+            margin: 0 auto;
+        }
+    
+        .back-link {
+            display: inline-block;
+            margin-bottom: 22px;
+            color: #60a5fa;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 15px;
+        }
+    
+        .back-link:hover {
+            color: #93c5fd;
+        }
+    
+        .title {
+            text-align: center;
+            margin-bottom: 34px;
+        }
+    
+        .title h1 {
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+    
+        .title p {
+            color: #94a3b8;
+            font-size: 18px;
+        }
+    
+        .bracket {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 280px 1fr 1fr 1fr;
+            gap: 28px;
+            align-items: start;
+            min-height: 1120px;
+        }
+    
+        .round-column {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+    
+        .round-title {
+            text-align: center;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 18px;
+        }
+    
+        .round-stack {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+    
+        .offset-last16 .round-stack {
+            padding-top: 76px;
+            gap: 96px;
+        }
+    
+        .offset-quarters .round-stack {
+            padding-top: 170px;
+            gap: 198px;
+        }
+    
+        .offset-semis .round-stack {
+            padding-top: 340px;
+            gap: 340px;
+        }
+    
+        .match-wrap {
+            position: relative;
+        }
+    
+        .match-card {
+            background: rgba(17, 24, 39, 0.88);
+            border: 1px solid rgba(148, 163, 184, 0.22);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 22px;
+            padding: 16px 16px 14px;
+            min-height: 112px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
+            position: relative;
+            z-index: 2;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+    
+        .match-card.highlight {
+            border: 1px solid rgba(34, 197, 94, 0.55);
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.12);
+        }
+    
+        .tie-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+    
+        .tie-link:hover .match-card {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 18px 34px rgba(0, 0, 0, 0.28);
+            border-color: rgba(96, 165, 250, 0.45);
+        }
+    
+        .team-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 4px 0;
+        }
+    
+        .team-row:last-child {
+            margin-bottom: 0;
+        }
+    
+        .team-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+    
+        .team-logo {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.96);
+            padding: 2px;
+            flex-shrink: 0;
+        }
+    
+        .team-name {
+            font-weight: 800;
+            font-size: 18px;
+            max-width: 100px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #f8fafc;
+        }
+    
+        .team-score {
+            font-weight: 900;
+            font-size: 28px;
+            min-width: 20px;
+            text-align: right;
+            color: #f8fafc;
+        }
+    
+        .winner .team-name,
+        .winner .team-score {
+            color: #ffffff;
+        }
+    
+        .loser .team-name,
+        .loser .team-score {
+            color: #64748b;
+            text-decoration: line-through;
+        }
+    
+        .winner .team-score {
+            text-shadow: 0 0 10px rgba(255,255,255,0.08);
+        }
+    
+        .match-date {
+            margin-top: 12px;
+            text-align: center;
+            font-size: 13px;
+            color: #94a3b8;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+    
+        .connector-right::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: -29px;
+            width: 29px;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(148,163,184,0.65), rgba(148,163,184,0.25));
+            z-index: 1;
+        }
+    
+        .connector-left::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: -29px;
+            width: 29px;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(148,163,184,0.25), rgba(148,163,184,0.65));
+            z-index: 1;
+        }
+    
+        .final-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-top: 250px;
+            gap: 20px;
+            position: relative;
+        }
+    
+        .trophy {
+            font-size: 92px;
+            opacity: 0.18;
+            filter: drop-shadow(0 0 20px rgba(250, 204, 21, 0.18));
+        }
+    
+        .champion-text {
+            font-size: 44px;
+            font-weight: 900;
+            color: #94a3b8;
+            text-align: center;
+            letter-spacing: 0.03em;
+        }
+    
+        .final-card {
+            width: 100%;
+        }
+    
+        .final-badge {
+            display: inline-block;
+            margin-top: 10px;
+            background: linear-gradient(135deg, #facc15, #f59e0b);
+            color: #111827;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 0.06em;
+        }
+    
+        .placeholder-card {
+            background: rgba(17, 24, 39, 0.45);
+            border: 1px dashed rgba(148, 163, 184, 0.35);
+            border-radius: 22px;
+            padding: 14px;
+            min-height: 112px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            font-weight: 800;
+            width: 100%;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+    
+        @media (max-width: 1400px) {
+            .bracket {
+                grid-template-columns: 1fr;
+            }
+    
+            .round-stack,
+            .final-column {
+                padding-top: 0 !important;
+                gap: 20px !important;
+            }
+    
+            .connector-left::before,
+            .connector-right::after {
+                display: none;
+            }
+    
+            .team-name {
+                max-width: 220px;
+            }
+    
+            .title h1 {
+                font-size: 36px;
+            }
+    
+            .champion-text {
+                font-size: 32px;
+            }
+        }
+        .grouped-round {
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
+}
+
+.tie-pair {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    position: relative;
+}
+
+.tie-pair + .tie-pair {
+    margin-top: 34px;
+}
+
+.quarter-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 110px;
+    padding-top: 96px;
+}
+
+.semi-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 260px;
+    padding-top: 250px;
+}
+
+.round-column.compact .round-stack {
+    gap: 22px;
+}
+
+.round-column.compact .match-wrap {
+    margin: 0;
+}
+
+.round-column.centered {
+    justify-content: flex-start;
+}
+
+.round-column.centered .match-wrap {
+    display: flex;
+    align-items: center;
+}
+
+.match-card {
+    min-height: 112px;
+}
+
+@media (max-width: 1400px) {
+    .grouped-round,
+    .quarter-stack,
+    .semi-stack,
+    .tie-pair {
+        gap: 20px !important;
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+}
+    </style>
+ 
+</head>
+<body>
+<div class="container">
+    <a href="/?league=6" class="back-link">← Back to Champions League table</a>
+
+    <div class="title">
+        <h1>🏆 Champions League Knockout Bracket</h1>
+        <p>Interactive aggregate-score bracket</p>
+    </div>
+
+    <div class="bracket">
+
+        <!-- LEFT ROUND OF 16 -->
+        <div class="round-column compact">
+            <div class="round-title">Round of 16</div>
+            <div class="grouped-round">
+    
+                <div class="tie-pair">
+                    {% for tie in rounds.left_last16[:2] %}
+                        {% if tie %}
+                        <div class="match-wrap connector-right">
+                            <a href="/champions-league/tie/{{ tie.tie_key }}" class="tie-link">
+                                <div class="match-card">
+                                    <div class="team-row {% if tie.is_complete and tie.winner_id == tie.team1_id %}winner{% elif tie.is_complete and tie.winner_id %}loser{% endif %}">
+                                        <div class="team-left">
+                                            {% if tie.team1_crest %}<img src="{{ tie.team1_crest }}" class="team-logo" alt="{{ tie.team1_name }}">{% endif %}
+                                            <span class="team-name">{{ tie.team1_tla or tie.team1_name }}</span>
+                                        </div>
+                                        <span class="team-score">{{ tie.team1_agg }}</span>
+                                    </div>
+                                    <div class="team-row {% if tie.is_complete and tie.winner_id == tie.team2_id %}winner{% elif tie.is_complete and tie.winner_id %}loser{% endif %}">
+                                        <div class="team-left">
+                                            {% if tie.team2_crest %}<img src="{{ tie.team2_crest }}" class="team-logo" alt="{{ tie.team2_name }}">{% endif %}
+                                            <span class="team-name">{{ tie.team2_tla or tie.team2_name }}</span>
+                                        </div>
+                                        <span class="team-score">{{ tie.team2_agg }}</span>
+                                    </div>
+                                    <div class="match-date">{% if tie.legs %}{{ tie.legs[-1].utcDate[:10] }}{% endif %}</div>
+                                </div>
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="placeholder-card">TBD</div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+    
+                <div class="tie-pair">
+                    {% for tie in rounds.left_last16[2:4] %}
+                        {% if tie %}
+                        <div class="match-wrap connector-right">
+                            <a href="/champions-league/tie/{{ tie.tie_key }}" class="tie-link">
+                                <div class="match-card">
+                                    <div class="team-row {% if tie.is_complete and tie.winner_id == tie.team1_id %}winner{% elif tie.is_complete and tie.winner_id %}loser{% endif %}">
+                                        <div class="team-left">
+                                            {% if tie.team1_crest %}<img src="{{ tie.team1_crest }}" class="team-logo" alt="{{ tie.team1_name }}">{% endif %}
+                                            <span class="team-name">{{ tie.team1_tla or tie.team1_name }}</span>
+                                        </div>
+                                        <span class="team-score">{{ tie.team1_agg }}</span>
+                                    </div>
+                                    <div class="team-row {% if tie.is_complete and tie.winner_id == tie.team2_id %}winner{% elif tie.is_complete and tie.winner_id %}loser{% endif %}">
+                                        <div class="team-left">
+                                            {% if tie.team2_crest %}<img src="{{ tie.team2_crest }}" class="team-logo" alt="{{ tie.team2_name }}">{% endif %}
+                                            <span class="team-name">{{ tie.team2_tla or tie.team2_name }}</span>
+                                        </div>
+                                        <span class="team-score">{{ tie.team2_agg }}</span>
+                                    </div>
+                                    <div class="match-date">{% if tie.legs %}{{ tie.legs[-1].utcDate[:10] }}{% endif %}</div>
+                                </div>
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="placeholder-card">TBD</div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+    
+            </div>
+        </div>
+    
+        <!-- LEFT QUARTERS -->
+        <div class="round-column centered">
+            <div class="round-title">Quarter-finals</div>
+            <div class="quarter-stack">
+                {% for tie in rounds.left_quarters %}
+                    {% if tie %}
+                    <div class="match-wrap connector-right connector-left">
+                        <a href="/champions-league/tie/{{ tie.tie_key }}" class="tie-link">
+                            <div class="match-card">
+                                <div class="team-row {% if tie.is_complete and tie.winner_id == tie.team1_id %}winner{% elif tie.is_complete and tie.winner_id %}loser{% endif %}">
+                                    <div class="team-left">
+                                        {% if tie.team1_crest %}<img src="{{ tie.team1_crest }}" class="team-logo" alt="{{ tie.team1_name }}">{% endif %}
+                                        <span class="team-name">{{ tie.team1_tla or tie.team1_name }}</span>
+                                    </div>
+                                    <span class="team-score">{{ tie.team1_agg }}</span>
+                                </div>
+                                <div class="team-row {% if tie.is_complete and tie.winner_id == tie.team2_id %}winner{% elif tie.is_complete and tie.winner_id %}loser{% endif %}">
+                                    <div class="team-left">
+                                        {% if tie.team2_crest %}<img src="{{ tie.team2_crest }}" class="team-logo" alt="{{ tie.team2_name }}">{% endif %}
+                                        <span class="team-name">{{ tie.team2_tla or tie.team2_name }}</span>
+                                    </div>
+                                    <span class="team-score">{{ tie.team2_agg }}</span>
+                                </div>
+                                <div class="match-date">{% if tie.legs %}{{ tie.legs[-1].utcDate[:10] }}{% endif %}</div>
+                            </div>
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="placeholder-card">TBD</div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    
+        <!-- LEFT SEMIS -->
+        <div class="round-column centered">
+            <div class="round-title">Semi-finals</div>
+            <div class="semi-stack">
+                {% for tie in rounds.left_semis %}
+                    {% if tie %}
+                    <div class="match-wrap connector-right connector-left">
+                        <a href="/champions-league/tie/{{ tie.tie_key }}" class="tie-link">
+                            <div class="match-card highlight">
+                                <div class="team-row {% if tie.is_complete and tie.winner_id == tie.team1_id %}winner{% elif tie.is_complete and tie.winner_id %}loser{% endif %}">
+                                    <div class="team-left">
+                                        {% if tie.team1_crest %}<img src="{{ tie.team1_crest }}" class="team-logo" alt="{{ tie.team1_name }}">{% endif %}
+                                        <span class="team-name">{{ tie.team1_tla or tie.team1_name }}</span>
+                                    </div>
+                                    <span class="team-score">{{ tie.team1_agg }}</span>
+                                </div>
+                                <div class="team-row {% if tie.is_complete and tie.winner_id == tie.team2_id %}winner{% elif tie.is_complete and tie.winner_id %}loser{% endif %}">
+                                    <div class="team-left">
+                                        {% if tie.team2_crest %}<img src="{{ tie.team2_crest }}" class="team-logo" alt="{{ tie.team2_name }}">{% endif %}
+                                        <span class="team-name">{{ tie.team2_tla or tie.team2_name }}</span>
+                                    </div>
+                                    <span class="team-score">{{ tie.team2_agg }}</span>
+                                </div>
+                                <div class="match-date">{% if tie.legs %}{{ tie.legs[-1].utcDate[:10] }}{% endif %}</div>
+                            </div>
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="placeholder-card">TBD</div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    
+        <!-- FINAL -->
+        <div class="final-column">
+            <div class="trophy">🏆</div>
+            <div class="champion-text">CHAMPION</div>
+    
+            {% if rounds.final %}
+                {% for tie in rounds.final %}
+                    {% if tie %}
+                    <a href="/champions-league/tie/{{ tie.tie_key }}" class="tie-link final-card">
+                        <div class="match-card highlight">
+                            <div class="team-row {% if tie.is_complete and tie.winner_id == tie.team1_id %}winner{% elif tie.is_complete and tie.winner_id %}loser{% endif %}">
+                                <div class="team-left">
+                                    {% if tie.team1_crest %}<img src="{{ tie.team1_crest }}" class="team-logo" alt="{{ tie.team1_name }}">{% endif %}
+                                    <span class="team-name">{{ tie.team1_tla or tie.team1_name }}</span>
+                                </div>
+                                <span class="team-score">{{ tie.team1_agg }}</span>
+                            </div>
+                            <div class="team-row {% if tie.is_complete and tie.winner_id == tie.team2_id %}winner{% elif tie.is_complete and tie.winner_id %}loser{% endif %}">
+                                <div class="team-left">
+                                    {% if tie.team2_crest %}<img src="{{ tie.team2_crest }}" class="team-logo" alt="{{ tie.team2_name }}">{% endif %}
+                                    <span class="team-name">{{ tie.team2_tla or tie.team2_name }}</span>
+                                </div>
+                                <span class="team-score">{{ tie.team2_agg }}</span>
+                            </div>
+                            <div class="match-date">
+                                {% if tie.legs %}{{ tie.legs[-1].utcDate[:10] }}{% endif %}
+                                <div class="final-badge">FINAL</div>
+                            </div>
+                        </div>
+                    </a>
+                    {% else %}
+                    <div class="placeholder-card">Final TBD</div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <div class="placeholder-card">Final TBD</div>
+            {% endif %}
+        </div>
+    
+        <!-- RIGHT SEMIS -->
+        <div class="round-column centered">
+            <div class="round-title">Semi-finals</div>
+            <div class="semi-stack">
+                {% for tie in rounds.right_semis %}
+                    {% if tie %}
+                    <div class="match-wrap connector-right connector-left">
+                        <a href="/champions-league/tie/{{ tie.tie_key }}" class="tie-link">
+                            <div class="match-card highlight">
+                                <div class="team-row {% if tie.is_complete and tie.winner_id == tie.team1_id %}winner{% elif tie.is_complete and tie.winner_id %}loser{% endif %}">
+                                    <div class="team-left">
+                                        {% if tie.team1_crest %}<img src="{{ tie.team1_crest }}" class="team-logo" alt="{{ tie.team1_name }}">{% endif %}
+                                        <span class="team-name">{{ tie.team1_tla or tie.team1_name }}</span>
+                                    </div>
+                                    <span class="team-score">{{ tie.team1_agg }}</span>
+                                </div>
+                                <div class="team-row {% if tie.is_complete and tie.winner_id == tie.team2_id %}winner{% elif tie.is_complete and tie.winner_id %}loser{% endif %}">
+                                    <div class="team-left">
+                                        {% if tie.team2_crest %}<img src="{{ tie.team2_crest }}" class="team-logo" alt="{{ tie.team2_name }}">{% endif %}
+                                        <span class="team-name">{{ tie.team2_tla or tie.team2_name }}</span>
+                                    </div>
+                                    <span class="team-score">{{ tie.team2_agg }}</span>
+                                </div>
+                                <div class="match-date">{% if tie.legs %}{{ tie.legs[-1].utcDate[:10] }}{% endif %}</div>
+                            </div>
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="placeholder-card">TBD</div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    
+        <!-- RIGHT QUARTERS -->
+        <div class="round-column centered">
+            <div class="round-title">Quarter-finals</div>
+            <div class="quarter-stack">
+                {% for tie in rounds.right_quarters %}
+                    {% if tie %}
+                    <div class="match-wrap connector-right connector-left">
+                        <a href="/champions-league/tie/{{ tie.tie_key }}" class="tie-link">
+                            <div class="match-card">
+                                <div class="team-row {% if tie.is_complete and tie.winner_id == tie.team1_id %}winner{% elif tie.is_complete and tie.winner_id %}loser{% endif %}">
+                                    <div class="team-left">
+                                        {% if tie.team1_crest %}<img src="{{ tie.team1_crest }}" class="team-logo" alt="{{ tie.team1_name }}">{% endif %}
+                                        <span class="team-name">{{ tie.team1_tla or tie.team1_name }}</span>
+                                    </div>
+                                    <span class="team-score">{{ tie.team1_agg }}</span>
+                                </div>
+                                <div class="team-row {% if tie.is_complete and tie.winner_id == tie.team2_id %}winner{% elif tie.is_complete and tie.winner_id %}loser{% endif %}">
+                                    <div class="team-left">
+                                        {% if tie.team2_crest %}<img src="{{ tie.team2_crest }}" class="team-logo" alt="{{ tie.team2_name }}">{% endif %}
+                                        <span class="team-name">{{ tie.team2_tla or tie.team2_name }}</span>
+                                    </div>
+                                    <span class="team-score">{{ tie.team2_agg }}</span>
+                                </div>
+                                <div class="match-date">{% if tie.legs %}{{ tie.legs[-1].utcDate[:10] }}{% endif %}</div>
+                            </div>
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="placeholder-card">TBD</div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    
+        <!-- RIGHT ROUND OF 16 -->
+        <div class="round-column compact">
+            <div class="round-title">Round of 16</div>
+            <div class="grouped-round">
+    
+                <div class="tie-pair">
+                    {% for tie in rounds.right_last16[:2] %}
+                        {% if tie %}
+                        <div class="match-wrap connector-left">
+                            <a href="/champions-league/tie/{{ tie.tie_key }}" class="tie-link">
+                                <div class="match-card">
+                                    <div class="team-row {% if tie.is_complete and tie.winner_id == tie.team1_id %}winner{% elif tie.is_complete and tie.winner_id %}loser{% endif %}">
+                                        <div class="team-left">
+                                            {% if tie.team1_crest %}<img src="{{ tie.team1_crest }}" class="team-logo" alt="{{ tie.team1_name }}">{% endif %}
+                                            <span class="team-name">{{ tie.team1_tla or tie.team1_name }}</span>
+                                        </div>
+                                        <span class="team-score">{{ tie.team1_agg }}</span>
+                                    </div>
+                                    <div class="team-row {% if tie.is_complete and tie.winner_id == tie.team2_id %}winner{% elif tie.is_complete and tie.winner_id %}loser{% endif %}">
+                                        <div class="team-left">
+                                            {% if tie.team2_crest %}<img src="{{ tie.team2_crest }}" class="team-logo" alt="{{ tie.team2_name }}">{% endif %}
+                                            <span class="team-name">{{ tie.team2_tla or tie.team2_name }}</span>
+                                        </div>
+                                        <span class="team-score">{{ tie.team2_agg }}</span>
+                                    </div>
+                                    <div class="match-date">{% if tie.legs %}{{ tie.legs[-1].utcDate[:10] }}{% endif %}</div>
+                                </div>
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="placeholder-card">TBD</div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+    
+                <div class="tie-pair">
+                    {% for tie in rounds.right_last16[2:4] %}
+                        {% if tie %}
+                        <div class="match-wrap connector-left">
+                            <a href="/champions-league/tie/{{ tie.tie_key }}" class="tie-link">
+                                <div class="match-card">
+                                    <div class="team-row {% if tie.is_complete and tie.winner_id == tie.team1_id %}winner{% elif tie.is_complete and tie.winner_id %}loser{% endif %}">
+                                        <div class="team-left">
+                                            {% if tie.team1_crest %}<img src="{{ tie.team1_crest }}" class="team-logo" alt="{{ tie.team1_name }}">{% endif %}
+                                            <span class="team-name">{{ tie.team1_tla or tie.team1_name }}</span>
+                                        </div>
+                                        <span class="team-score">{{ tie.team1_agg }}</span>
+                                    </div>
+                                    <div class="team-row {% if tie.is_complete and tie.winner_id == tie.team2_id %}winner{% elif tie.is_complete and tie.winner_id %}loser{% endif %}">
+                                        <div class="team-left">
+                                            {% if tie.team2_crest %}<img src="{{ tie.team2_crest }}" class="team-logo" alt="{{ tie.team2_name }}">{% endif %}
+                                            <span class="team-name">{{ tie.team2_tla or tie.team2_name }}</span>
+                                        </div>
+                                        <span class="team-score">{{ tie.team2_agg }}</span>
+                                    </div>
+                                    <div class="match-date">{% if tie.legs %}{{ tie.legs[-1].utcDate[:10] }}{% endif %}</div>
+                                </div>
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="placeholder-card">TBD</div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+    
+            </div>
+        </div>
+    
+    </div>
+
+  
+</div>
+</body>
+</html>

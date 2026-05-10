@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ team_name }} - Team Page</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #0b0f14;
+            color: #f9fafb;
+            padding: 30px 15px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #22c55e;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .team-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            background: #111827;
+            padding: 20px;
+            border-radius: 14px;
+        }
+
+        .team-header img {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+            background: white;
+            border-radius: 10px;
+            padding: 6px;
+        }
+
+        .team-header h1 {
+            font-size: 28px;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: #111827;
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .card h2 {
+            margin-bottom: 16px;
+            font-size: 22px;
+        }
+
+        .card h3 {
+            margin: 16px 0 10px;
+            color: #d1d5db;
+        }
+
+        .empty {
+            color: #9ca3af;
+        }
+
+        .squad-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .player-chip {
+            background: #1f2937;
+            padding: 8px 12px;
+            border-radius: 999px;
+            line-height: 1.4;
+        }
+
+        .player-chip small {
+            display: block;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #1f2937;
+            color: #9ca3af;
+        }
+
+        tr {
+            border-bottom: 1px solid #1f2937;
+        }
+
+        tr:hover {
+            background: #1a2332;
+        }
+
+        .score {
+            font-weight: bold;
+            color: #22c55e;
+        }
+
+        .result-badge {
+            display: inline-block;
+            min-width: 34px;
+            text-align: center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .win {
+            background: #22c55e;
+        }
+
+        .draw {
+            background: #f59e0b;
+        }
+
+        .loss {
+            background: #ef4444;
+        }
+
+        .pitch {
+            position: relative;
+            height: 760px;
+            border-radius: 20px;
+            background: linear-gradient(to bottom, #166534, #14532d);
+            border: 3px solid rgba(255,255,255,0.2);
+            overflow: hidden;
+        }
+
+        .pitch::before {
+            content: "";
+            position: absolute;
+            inset: 20px;
+            border: 2px solid rgba(255,255,255,0.35);
+            border-radius: 12px;
+        }
+
+        .pitch-player {
+            position: absolute;
+            width: 100px;
+            min-height: 100px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.92);
+            color: #111827;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 8px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+            transform: translate(-50%, -50%);
+        }
+
+        .pitch-player .name {
+            font-size: 13px;
+            font-weight: bold;
+            line-height: 1.15;
+        }
+
+        .pitch-player .meta {
+            font-size: 12px;
+            margin-top: 4px;
+            color: #374151;
+        }
+
+        .pitch-player .ga {
+            font-size: 12px;
+            margin-top: 6px;
+            background: #111827;
+            color: #ffffff;
+            padding: 4px 8px;
+            border-radius: 999px;
+        }
+
+        .pitch-player.empty-player {
+            background: rgba(255,255,255,0.25);
+            color: white;
+        }
+
+        .p1  { left: 50%; top: 88%; }
+        .p2  { left: 18%; top: 70%; }
+        .p3  { left: 38%; top: 74%; }
+        .p4  { left: 62%; top: 74%; }
+        .p5  { left: 82%; top: 70%; }
+        .p6  { left: 28%; top: 50%; }
+        .p7  { left: 50%; top: 56%; }
+        .p8  { left: 72%; top: 50%; }
+        .p9  { left: 20%; top: 22%; }
+        .p10 { left: 50%; top: 16%; }
+        .p11 { left: 80%; top: 22%; }
+
+        .insight {
+            color: #d1d5db;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .team-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .pitch {
+                height: 620px;
+            }
+
+            .pitch-player {
+                width: 82px;
+                min-height: 82px;
+                padding: 6px;
+            }
+
+            .pitch-player .name {
+                font-size: 11px;
+            }
+
+            .pitch-player .meta,
+            .pitch-player .ga {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <a href="/?league={{ league_key }}" class="back-link">← Back to table</a>
+
+    <div class="team-header">
+        {% if crest %}
+        <img src="{{ crest }}" alt="{{ team_name }}">
+        {% endif %}
+        <h1>{{ team_name }}</h1>
+    </div>
+
+    <div class="layout">
+
+        <div class="card">
+            <h2>Squad by Position</h2>
+
+            {% if grouped_players %}
+                <h3>Goalkeepers</h3>
+                <div class="squad-grid">
+                    {% for player in grouped_players["Goalkeepers"] %}
+                        <div class="player-chip">
+                            {{ player.name }}
+                            <small>{{ player.goals }}G {{ player.assists }}A</small>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <h3>Defenders</h3>
+                <div class="squad-grid">
+                    {% for player in grouped_players["Defenders"] %}
+                        <div class="player-chip">
+                            {{ player.name }}
+                            <small>{{ player.goals }}G {{ player.assists }}A</small>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <h3>Midfielders</h3>
+                <div class="squad-grid">
+                    {% for player in grouped_players["Midfielders"] %}
+                        <div class="player-chip">
+                            {{ player.name }}
+                            <small>{{ player.goals }}G {{ player.assists }}A</small>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <h3>Forwards</h3>
+                <div class="squad-grid">
+                    {% for player in grouped_players["Forwards"] %}
+                        <div class="player-chip">
+                            {{ player.name }}
+                            <small>{{ player.goals }}G {{ player.assists }}A</small>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="empty">Squad data not available.</p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h2>Last 5 Matches</h2>
+
+            {% if matches %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Home</th>
+                        <th>Score</th>
+                        <th>Away</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for match in matches %}
+                    {% set home_goals = match.score.fullTime.home %}
+                    {% set away_goals = match.score.fullTime.away %}
+
+                    {% if match.homeTeam.id == team_id %}
+                        {% set is_win = home_goals > away_goals %}
+                        {% set is_draw = home_goals == away_goals %}
+                    {% else %}
+                        {% set is_win = away_goals > home_goals %}
+                        {% set is_draw = away_goals == home_goals %}
+                    {% endif %}
+
+                    <tr>
+                        <td>{{ match.utcDate[:10] }}</td>
+                        <td>{{ match.homeTeam.name }}</td>
+                        <td class="score">{{ home_goals }} - {{ away_goals }}</td>
+                        <td>{{ match.awayTeam.name }}</td>
+                        <td>
+                            {% if is_win %}
+                                <span class="result-badge win">W</span>
+                            {% elif is_draw %}
+                                <span class="result-badge draw">D</span>
+                            {% else %}
+                                <span class="result-badge loss">L</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <p class="empty">No recent matches found.</p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h2>Players on Pitch</h2>
+
+            <div class="pitch">
+                {% for slot, player in pitch_players %}
+                    {% if player %}
+                    <div class="pitch-player {{ slot }}">
+                        <div class="name">{{ player.name }}</div>
+                        <div class="meta">{{ player.position }}</div>
+                        <div class="ga">{{ player.goals }}G {{ player.assists }}A</div>
+                    </div>
+                    {% else %}
+                    <div class="pitch-player empty-player {{ slot }}">
+                        <div class="name">—</div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if ai_insight %}
+        <div class="card">
+            <h2>AI Insight</h2>
+            <p class="insight">{{ ai_insight }}</p>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+</body>
+</html>

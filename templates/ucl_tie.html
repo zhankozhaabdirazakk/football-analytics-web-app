@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ tie.team1_name }} vs {{ tie.team2_name }}</title>
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
+            color: #111827;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #16a34a;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .header, .card {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin-bottom: 8px;
+        }
+
+        .agg {
+            font-size: 28px;
+            font-weight: 800;
+            margin-top: 10px;
+        }
+
+        .leg {
+            padding: 16px 0;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .leg:first-child {
+            border-top: none;
+            padding-top: 0;
+        }
+
+        .score {
+            font-size: 22px;
+            font-weight: 800;
+            margin: 8px 0;
+        }
+
+        .meta {
+            color: #6b7280;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="/champions-league/knockout" class="back-link">← Back to bracket</a>
+
+    <div class="header">
+        <h1>{{ tie.team1_name }} vs {{ tie.team2_name }}</h1>
+        <div class="agg">Aggregate: {{ tie.team1_agg }} - {{ tie.team2_agg }}</div>
+    </div>
+
+    <div class="card">
+        <h2>Legs</h2>
+
+        {% for leg in tie.legs %}
+        <div class="leg">
+            <div class="meta">Leg {{ loop.index }} · {{ leg.utcDate[:10] }}</div>
+            <div class="score">
+                {{ leg.homeTeam.name }} {{ leg.score.fullTime.home }} - {{ leg.score.fullTime.away }} {{ leg.awayTeam.name }}
+            </div>
+            <div class="meta">Status: {{ leg.status }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</body>
+</html>

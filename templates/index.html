@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>League Table Tracker</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+    
+        body {
+            font-family: Inter, Arial, sans-serif;
+            background:
+                radial-gradient(circle at top, rgba(59, 130, 246, 0.10), transparent 28%),
+                linear-gradient(180deg, #0a1020 0%, #111827 100%);
+            color: #f8fafc;
+            padding: 24px;
+            min-height: 100vh;
+        }
+    
+        .container {
+            max-width: 1250px;
+            margin: 0 auto;
+        }
+    
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(17, 24, 39, 0.88);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 16px 20px;
+            border-radius: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.20);
+        }
+    
+        .brand {
+            font-size: 22px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.02em;
+        }
+    
+        .nav-links {
+            display: flex;
+            gap: 18px;
+        }
+    
+        .nav-links a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.2s ease;
+        }
+    
+        .nav-links a:hover {
+            color: #ffffff;
+        }
+    
+        .hero {
+            background: rgba(17, 24, 39, 0.88);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            border-radius: 24px;
+            padding: 30px;
+            margin-bottom: 22px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.22);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+    
+        .hero h1 {
+            font-size: 40px;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 10px;
+            color: #ffffff;
+            letter-spacing: -0.03em;
+        }
+    
+        .hero p {
+            color: #94a3b8;
+            font-size: 17px;
+            line-height: 1.5;
+        }
+    
+        .form-card {
+            background: rgba(17, 24, 39, 0.88);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            border-radius: 20px;
+            padding: 18px;
+            margin-bottom: 22px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.20);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+    
+        form {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+    
+        select {
+            flex: 1;
+            padding: 13px 14px;
+            background: #1f2937;
+            border: 1px solid #334155;
+            color: #ffffff;
+            border-radius: 14px;
+            font-size: 15px;
+            outline: none;
+            transition: 0.2s ease;
+        }
+    
+        select:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.18);
+        }
+    
+        button {
+            padding: 13px 22px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border: none;
+            border-radius: 14px;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.2s ease;
+            box-shadow: 0 8px 20px rgba(34,197,94,0.18);
+        }
+    
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px rgba(34,197,94,0.24);
+        }
+    
+        .league-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 24px 0 18px;
+            background: rgba(17, 24, 39, 0.88);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            border-radius: 20px;
+            padding: 16px 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+    
+        .league-header h2 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.02em;
+        }
+    
+        .league-logo {
+            width: 56px;
+            height: 56px;
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 6px;
+            object-fit: contain;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.16);
+        }
+    
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+            background: transparent;
+        }
+    
+        thead th {
+            background: rgba(30, 41, 59, 0.95);
+            color: #94a3b8;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 800;
+            padding: 16px 12px;
+            text-align: left;
+        }
+    
+        thead th:first-child {
+            border-top-left-radius: 18px;
+        }
+    
+        thead th:last-child {
+            border-top-right-radius: 18px;
+        }
+    
+        tbody tr {
+            background: rgba(17, 24, 39, 0.88);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+            transition: 0.2s ease;
+        }
+    
+        tbody tr:hover {
+            background: rgba(30, 41, 59, 0.78);
+            transform: translateY(-1px);
+        }
+    
+        td {
+            padding: 18px 12px;
+            color: #e5e7eb;
+            font-size: 15px;
+            border-top: 1px solid rgba(51, 65, 85, 0.65);
+            border-bottom: 1px solid rgba(51, 65, 85, 0.65);
+            text-align: left;
+        }
+    
+        tbody td:first-child {
+            border-left: 1px solid rgba(51, 65, 85, 0.65);
+            border-top-left-radius: 18px;
+            border-bottom-left-radius: 18px;
+        }
+    
+        tbody td:last-child {
+            border-right: 1px solid rgba(51, 65, 85, 0.65);
+            border-top-right-radius: 18px;
+            border-bottom-right-radius: 18px;
+        }
+    
+        .ucl td:first-child,
+        .rel td:first-child,
+        .top8 td:first-child,
+        .mid16 td:first-child {
+            position: relative;
+            padding-left: 30px;
+        }
+    
+        .ucl td:first-child::before,
+        .rel td:first-child::before,
+        .top8 td:first-child::before,
+        .mid16 td:first-child::before {
+            content: "";
+            position: absolute;
+            left: 8px;
+            top: 8px;
+            bottom: 8px;
+            width: 6px;
+            border-radius: 999px;
+            box-shadow: 0 0 8px rgba(255,255,255,0.08);
+        }
+    
+        .ucl td:first-child::before {
+            background: #3b82f6;
+        }
+    
+        .rel td:first-child::before {
+            background: #ef4444;
+        }
+    
+        .top8 td:first-child::before {
+            background: #22c55e;
+        }
+    
+        .mid16 td:first-child::before {
+            background: #3b82f6;
+        }
+    
+        .team-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    
+        .team-logo {
+            width: 26px;
+            height: 26px;
+            object-fit: contain;
+            background: rgba(255,255,255,0.96);
+            border-radius: 999px;
+            padding: 2px;
+            flex-shrink: 0;
+        }
+    
+        .team-link {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 700;
+            transition: 0.2s ease;
+        }
+    
+        .team-link:hover {
+            color: #60a5fa;
+        }
+    
+        .points {
+            font-weight: 800;
+            color: #4ade80;
+        }
+    
+        .legend {
+            margin-top: 16px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            background: rgba(17, 24, 39, 0.88);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            border-radius: 18px;
+            padding: 14px 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+    
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 14px;
+        }
+    
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 999px;
+        }
+    
+        .empty-message {
+            margin-top: 16px;
+            color: #94a3b8;
+            font-size: 15px;
+        }
+    
+        @media (max-width: 900px) {
+            body {
+                padding: 16px;
+            }
+    
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+    
+            .nav-links {
+                flex-wrap: wrap;
+            }
+    
+            .hero {
+                padding: 22px;
+            }
+    
+            .hero h1 {
+                font-size: 30px;
+            }
+    
+            form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+    
+            button,
+            select {
+                width: 100%;
+            }
+    
+            .league-header {
+                align-items: flex-start;
+            }
+    
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+    </style>
+
+
+</head>
+
+<body>
+<div class="container">
+
+    <div class="hero">
+        <h1>⚽ League Table Tracker</h1>
+        <p>Live football standings dashboard</p>
+    </div>
+
+    <div class="form-card">
+        <form method="GET">
+            <select name="league">
+                {% for key, league in leagues.items() %}
+                    <option value="{{ key }}" {% if key == selected_league %}selected{% endif %}>
+                        {{ league.name }}
+                    </option>
+                {% endfor %}
+            </select>
+            <button type="submit">Show Table</button>
+        </form>
+    </div>
+
+    {% if table and league_data %}
+    <div class="league-header">
+        <img src="{{ league_data.logo }}" class="league-logo" alt="{{ league_data.name }}">
+        <div>
+            <h2>
+                {% if league_data.code == "CL" %}
+                    {{ league_data.name }} League Phase
+                {% else %}
+                    {{ league_data.name }} Standings
+                {% endif %}
+            </h2>
+    
+            {% if league_data.code == "CL" %}
+            <div style="margin-top: 10px;">
+                <a href="/champions-league/knockout" class="team-link">View Knockout Bracket</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Pos</th>
+                <th>Team</th>
+                <th>P</th>
+                <th>W</th>
+                <th>D</th>
+                <th>L</th>
+                <th>GF</th>
+                <th>GA</th>
+                <th>GD</th>
+                <th>Pts</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for row in table %}
+            <tr class="
+                    {% if league_data.code == 'CL' %}
+                     {% if row.position <= 8 %}top8
+                      {% elif row.position <= 24 %}mid16
+                          {% endif %}
+                            {% else %}
+                             {% if row.position <= league_data.ucl_spots %}ucl
+                             {% elif row.position >= league_data.rel_from %}rel
+                            {% endif %}
+                            {% endif %}
+                                    ">
+                <td>{{ row.position }}</td>
+                <td class="team-cell">
+                    <img src="{{ row.team.crest }}" class="team-logo" alt="{{ row.team.name }}">
+                    <a href="/team/{{ row.team.id }}?name={{ row.team.name | urlencode }}&crest={{ row.team.crest | urlencode }}&league={{ selected_league }}" class="team-link">
+                        {{ row.team.name }}
+                    </a>
+                </td>
+                <td>{{ row.playedGames }}</td>
+                <td>{{ row.won }}</td>
+                <td>{{ row.draw }}</td>
+                <td>{{ row.lost }}</td>
+                <td>{{ row.goalsFor }}</td>
+                <td>{{ row.goalsAgainst }}</td>
+                <td>{{ row.goalDifference }}</td>
+                <td class="points">{{ row.points }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="legend">
+        {% if league_data.code == 'CL' %}
+            <div class="legend-item">
+                <div class="legend-color" style="background:#22c55e;"></div>
+                Top 8 (Direct qualification)
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background:#3b82f6;"></div>
+                9–24 (Playoffs)
+            </div>
+        {% else %}
+            <div class="legend-item">
+                <div class="legend-color" style="background:#3b82f6;"></div>
+                Champions League
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background:#ef4444;"></div>
+                Relegation
+            </div>
+        {% endif %}
+    </div>
+
+    {% endif %}
+
+</div>
+</body>
+</html>
